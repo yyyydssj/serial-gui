@@ -1,0 +1,14 @@
+# 构建产物
+build/
+
+# 采集数据（数据库不要提交）
+*.db
+*.db-wal
+*.db-shm
+data/
+
+# 本地数据库位置配置
+serial_gui.ini
+
+# 导出文件
+*.csv

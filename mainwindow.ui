@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1120</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Modbus RTU 上位机</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <item>
+     <widget class="QGroupBox" name="connBox">
+      <property name="title">
+       <string>连接</string>
+      </property>
+      <layout class="QHBoxLayout" name="connLayout">
+       <item>
+        <widget class="QLabel" name="labelPort">
+         <property name="text">
+          <string>串口：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="m_portBox">
+         <property name="minimumSize">
+          <size>
+           <width>220</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_refreshBtn">
+         <property name="text">
+          <string>刷新</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="connSpacer1">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Policy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>12</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelBaud">
+         <property name="text">
+          <string>波特率：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="m_baudBox"/>
+       </item>
+       <item>
+        <spacer name="connSpacer2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Policy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>12</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_openBtn">
+         <property name="text">
+          <string>打开串口</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="connSpacer3">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="deviceBox">
+      <property name="title">
+       <string>轮询设备（一轮 = 依次访问下列所有启用的设备）</string>
+      </property>
+      <layout class="QVBoxLayout" name="deviceLayout">
+       <item>
+        <widget class="QTableWidget" name="m_deviceTable">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>92</height>
+          </size>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+         </property>
+         <column>
+          <property name="text">
+           <string>启用</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>从站地址</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>功能码</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>起始地址</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>寄存器数</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="deviceBtnLayout">
+         <item>
+          <widget class="QPushButton" name="m_addDeviceBtn">
+           <property name="toolTip">
+            <string>按当前最大从站地址 +1 添加一台设备</string>
+           </property>
+           <property name="text">
+            <string>添加设备</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_delDeviceBtn">
+           <property name="text">
+            <string>删除选中</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelDeviceHint">
+           <property name="text">
+            <string>勾选「启用」；双击单元格可改从站 / 功能码 / 起始 / 寄存器数</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="deviceSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="pollBox">
+      <property name="title">
+       <string>轮询参数</string>
+      </property>
+      <layout class="QHBoxLayout" name="pollLayout">
+       <item>
+        <widget class="QLabel" name="labelTimeout">
+         <property name="text">
+          <string>超时：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="m_timeoutSpin">
+         <property name="suffix">
+          <string> ms</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>60000</number>
+         </property>
+         <property name="value">
+          <number>500</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelInterval">
+         <property name="text">
+          <string>间隔：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="m_intervalSpin">
+         <property name="suffix">
+          <string> ms</string>
+         </property>
+         <property name="minimum">
+          <number>10</number>
+         </property>
+         <property name="maximum">
+          <number>60000</number>
+         </property>
+         <property name="value">
+          <number>300</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelMaxPoll">
+         <property name="text">
+          <string>轮数：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="m_maxPollSpin">
+         <property name="toolTip">
+          <string>轮询多少轮后自动停止（一轮 = 所有启用设备各访问一次）；0 = 不限，持续采集</string>
+         </property>
+         <property name="specialValueText">
+          <string>不限</string>
+         </property>
+         <property name="maximum">
+          <number>1000000</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_startBtn">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>开始轮询</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_stopBtn">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>停止轮询</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="pollSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="alarmBox">
+      <property name="title">
+       <string>报警规则（超限单元格标红；事件写入数据库）</string>
+      </property>
+      <layout class="QVBoxLayout" name="alarmLayout">
+       <item>
+        <widget class="QTableWidget" name="m_alarmTable">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>92</height>
+          </size>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+         </property>
+         <column>
+          <property name="text">
+           <string>启用</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>从站</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>寄存器地址</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>下限（留空=不查）</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>上限（留空=不查）</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>回差</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="alarmBtnLayout">
+         <item>
+          <widget class="QPushButton" name="m_addAlarmBtn">
+           <property name="text">
+            <string>添加规则</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_delAlarmBtn">
+           <property name="text">
+            <string>删除选中</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="m_beepBox">
+           <property name="text">
+            <string>报警时响铃</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelAlarmHint">
+           <property name="text">
+            <string>回差防抖：超上限报警后，要降到「上限 − 回差」才解除</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="alarmSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+        <item>
+         <layout class="QHBoxLayout" name="sendTargetLayout">
+          <item>
+           <widget class="QLabel" name="labelSendTitle">
+            <property name="text">
+             <string>下发阈值到设备（0x06）：从站</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="m_sendSlaveSpin">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>247</number>
+            </property>
+            <property name="value">
+             <number>1</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelSendReg">
+            <property name="text">
+             <string>寄存器</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="m_sendRegSpin">
+            <property name="toolTip">
+             <string>ESP32 固件里上限阈值是寄存器 1</string>
+            </property>
+            <property name="maximum">
+             <number>999</number>
+            </property>
+            <property name="value">
+             <number>1</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelSendVal">
+            <property name="text">
+             <string>值</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="m_targetSpinBox">
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <double>120.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.500000000000000</double>
+            </property>
+            <property name="value">
+             <double>30.000000000000000</double>
+            </property>
+            <property name="suffix">
+             <string> ℃</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="m_sendTargetBtn">
+            <property name="text">
+             <string>下发到设备</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelSendHint">
+            <property name="text">
+             <string>写入寄存器（值 = ℃ ×10）；成功后设备蜂鸣器按该阈值动作</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="sendTargetSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="dbBox">
+      <property name="title">
+       <string>数据落地（SQLite）</string>
+      </property>
+      <layout class="QVBoxLayout" name="dbLayout">
+       <item>
+        <layout class="QHBoxLayout" name="dbRow1">
+         <item>
+          <widget class="QCheckBox" name="m_recordBox">
+           <property name="toolTip">
+            <string>勾选后，每一次成功读取的每个寄存器都会写入数据库</string>
+           </property>
+           <property name="text">
+            <string>记录数据到数据库</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelDbPath">
+           <property name="text">
+            <string>数据库：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="m_dbPathLabel">
+           <property name="text">
+            <string>（尚未打开）</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="dbRow2">
+         <item>
+          <widget class="QPushButton" name="m_chooseDbDirBtn">
+           <property name="toolTip">
+            <string>选择保存数据库的文件夹；选过一次会记住（存在配置文件里）</string>
+           </property>
+           <property name="text">
+            <string>选择数据库位置</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_historyBtn">
+           <property name="text">
+            <string>查看历史</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_exportBtn">
+           <property name="text">
+            <string>导出 CSV</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_clearBtn">
+           <property name="text">
+            <string>清空数据</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="dbSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="labelTable">
+      <property name="text">
+       <string>实时数据：</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="m_table">
+      <property name="editTriggers">
+       <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+      </property>
+      <column>
+       <property name="text">
+        <string>从站</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>寄存器地址</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>值（十进制）</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>值（十六进制）</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>状态</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>更新时间</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="labelLog">
+      <property name="text">
+       <string>通信日志：</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPlainTextEdit" name="m_log">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+      <property name="maximumBlockCount">
+       <number>2000</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
